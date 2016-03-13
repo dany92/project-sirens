@@ -1,0 +1,25 @@
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+#errorMessage{
+	height: 200px;
+	width: 100px;
+}
+
+.no-padding{
+	padding: 0 !important;
+}
+
+#currentLocationButton{
+	padding-bottom: 20px;
+	padding-top: 15px;
+}
+
+#map {
+	height: 400px;
+	width: 500px;
+	margin-top: 30px;
+}
