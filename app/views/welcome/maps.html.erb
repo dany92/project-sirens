@@ -1,138 +1,105 @@
-<div class="container">
-  <h1> Look up locations </h1>
-  <div class = "col-md-12" id="currentLocationButton">
-    <button type="submit" class = "btn btn-lg btn-primary" id="navLocate"> My current location </button>
-  </div>
-  <form>
-    <div "form-group row no-padding text-center col-md-12">
-      <div class= "col-md-10">
-        <input type="text" class="form-control input-lg" id="address" placeholder="e.g. 123 Main St, Philadelphia, PA" autofocus=true>
-      </div>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geocoding service</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 400px;
+        width: 500px;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floating-panel">
+      <input id="address" type="textbox" value="Boston, MA, USA">
+      <input id="submit" type="button" value="Geocode">
     </div>
-    <div class = "col-md-2">
-       <button type="submit" class="btn btn-lg btn-success" id="submit">Find Venues</button>
-     </div>
-  </form>
-  <div class="col-md-6 col-md-offset-3">
-      <div id="map"></div>
-      <div id="errorMessage"></div>
-  </div>
-</div>
+    <div id="map"></div>
+    <script>
+      var map;
+      var infowindow;
 
-<script>
- 
-
-  var map;
-  var infowindow;
-
-  function initMap() {
-     map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 42.3510, lng: -71.1310},
-      zoom: 15
-    });
-    infoWindow = new google.maps.InfoWindow({map: map});
-   var service = new google.maps.places.PlacesService(map);
-   var geocoder = new google.maps.Geocoder(); 
-    // Try HTML5 geolocation.
-
-    document.getElementById('navLocate').addEventListener('click', function(){
-        findCurrentLocation(service);
-    });
-
-    document.getElementById('submit').addEventListener('click', function() {
-          geocodeAddress(geocoder, map, service);
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: {lat: 42.3510, lng: -71.1310}
         });
-    
-  }
+        var geocoder = new google.maps.Geocoder();
 
-  function findCurrentLocation(service){
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        var pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        findNearby(pos, service);
-      }, function() {
-        handleLocationError(true, infoWindow, map.getCenter());
-      });
-    } else {
-      // Browser doesn't support Geolocation
-      handleLocationError(false, infoWindow, map.getCenter());
-    }
-
-  }
-  function findNearby(pos, service) {
-        service.nearbySearch({
-          location: pos,
-          radius: 500,
-          type: ['night_club']
-        }, callback);
-
-        infoWindow.setPosition(pos);
-        infoWindow.setContent('Your location.');
-        map.setCenter(pos);
-
-  }
-
-  function callback(results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      for (var i = 0; i < results.length; i++) {
-        createMarker(results[i]);
-        console.log(results[i]);
+        document.getElementById('submit').addEventListener('click', function() {
+          geocodeAddress(geocoder, map);
+        });
       }
-    }
-    else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
-      document.getElementById("errorMessage").innerHTML = "There aren't any clubs around your area";
-      //alert("There aren't any clubs around your area");
-    }
-    else{
-      document.getElementById("errorMessage").innerHTML = "Problem finding your clubs around your area.";
-      //alert("Problem finding your clubs around your area.");
-    }
-  }
 
-  function createMarker(place) {
-    var placeLoc = place.geometry.location;
-    var marker = new google.maps.Marker({
-      map: map,
-      position: place.geometry.location
-    });
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
 
-    google.maps.event.addListener(marker, 'click', function() {
-      infowindow.setContent(place.name);
-      infowindow.open(map, this);
-    });
-  }
-
-  function geocodeAddress(geocoder, resultsMap, service) {
-    var address = document.getElementById('address').value;
-    geocoder.geocode({'address': address}, function(results, status) {
-      if (status === google.maps.GeocoderStatus.OK) {
-       /*resultsMap.setCenter(results[0].geometry.location);
+      function createMarker(place) {
+        var placeLoc = place.geometry.location;
         var marker = new google.maps.Marker({
-          map: resultsMap,
-          position: results[0].geometry.location
-        }); */
-        var pos = {
-          lat: results[0].geometry.location.lat(),
-          lng: results[0].geometry.location.lng()
-        };
-        findNearby(pos,service);
-
-      } else {
-        alert('Geocode was not successful for the following reason: ' + status);
+          map: map,
+          position: place.geometry.location
+        });
+        infowindow = new google.maps.InfoWindow();
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(place.name+'<br>'+ place.formatted_address);
+            infowindow.open(map, this);
+          });
       }
-    });
-  }
 
-  function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-      'Error: The Geolocation service failed.' :
-      'Error: Your browser doesn\'t support geolocation.');
-  }
-</script>
+      function geocodeAddress(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+            var request = {
+              lat: results[0].geometry.location.lat(),
+              lng: results[0].geometry.location.lng()
+            };
+            var service = new google.maps.places.PlacesService(map);
+          service.nearbySearch({
+            location: request,
+            radius: 500,
+            type: ['night_club']
+          }, callback);
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+    </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=_______&libraries=places&callback=initMap" async defer>
-</script>
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer>
+    </script>
+  </body>
+</html>
