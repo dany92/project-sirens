@@ -1,0 +1,13 @@
+h1 Venues
+
+table
+	thead
+		th Venue
+		th Owner
+		th Address
+	-@venues.each do |venue|
+		tbody
+			td = venue.name
+			td = venue.owner
+			td = venue.address
+

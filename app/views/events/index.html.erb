@@ -1,0 +1,28 @@
+<h1> Events </h1>
+
+<table>
+	<thead>
+		<th> Title </th>
+		<th> Hosted By: </th>
+		<th> Start Date </th>
+		<th> Start Time </th>
+		<th> End Date </th>
+		<th> End Time </th>
+	</thead>
+		<% @events.each do |event| %>
+			<tbody>
+				<td><%= event.title %></td>
+				<td><%= event.venue.name %></td>
+				<td><%= "#{event.start_time.year}/#{event.start_time.month}/#{event.start_time.day}" %></td>
+				<td><%= "#{event.start_time.hour}:#{event.start_time.min}" %></td>
+				<td><%= "#{event.end_time.year}/#{event.end_time.month}/#{event.end_time.day}" %></td>
+				<td><%= "#{event.end_time.hour}:#{event.end_time.min}" %></td>
+			</tbody>
+		<% end %>
+</table>
+
+<style>
+	th {
+		padding-right: 80px;
+	}
+</style>
