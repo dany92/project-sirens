@@ -1,0 +1,88 @@
+<div class="col-md-6 col-md-offset-4">
+  <div id="floating-panel">
+    <input id="address" type="textbox" value="Boston, MA, USA">
+    <input id="submit" type="button" value="Geocode">
+  </div>
+</div>
+<div class="col-md-6 col-md-offset-4" id="map"></div>
+
+<table class="col-md-12 col-md-offset-2 table table-hover" id="venueList">
+  <thead>
+    <tr>
+      <th> Venue Name </th>
+      <th> Address </th>
+    <tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<script>
+  var map;
+  var infowindow;
+
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 15,
+      center: {lat: 42.3510, lng: -71.1310}
+    });
+    var geocoder = new google.maps.Geocoder();
+
+    document.getElementById('submit').addEventListener('click', function() {
+      geocodeAddress(geocoder, map);
+    });
+  }
+
+  function callback(results, status) {
+    $('#venueList tr').remove();
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        createMarker(results[i]);
+        //console.log(results[i]);
+       $('#venueList').append('<tr><td>'+results[i].name+'</td>'+'<td>'+results[i].vicinity+'</td></tr>');
+      }
+    }
+  }
+
+  function createMarker(place) {
+    var placeLoc = place.geometry.location;
+    var marker = new google.maps.Marker({
+      map: map,
+      position: place.geometry.location
+    });
+    infowindow = new google.maps.InfoWindow();
+    google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + place.vicinity + '</div>');
+        infowindow.open(map, this);
+      });
+  }
+
+  function geocodeAddress(geocoder, resultsMap) {
+    var address = document.getElementById('address').value;
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status === google.maps.GeocoderStatus.OK) {
+        resultsMap.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+          map: resultsMap,
+          position: results[0].geometry.location
+        });
+        var request = {
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        };
+        var service = new google.maps.places.PlacesService(map);
+      service.nearbySearch({
+        location: request,
+        radius: 1000,
+        type: ['night_club']
+      }, callback);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  }
+</script>
+
+<script
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD2SYDVuCiARIaztWQzXRmxhnusjvFeYZ0&libraries=places&callback=initMap" async defer>
+</script>
