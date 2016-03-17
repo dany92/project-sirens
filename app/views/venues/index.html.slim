@@ -1,13 +1,16 @@
 h1 Venues
 
-table
+table.table.col-md-12
 	thead
-		th Venue
-		th Owner
-		th Address
-	-@venues.each do |venue|
-		tbody
-			td = venue.name
-			td = venue.owner
-			td = venue.address
+		tr
+			th Venue
+			th Owner
+			th Address
+	tbody
+		-@venues.each do |venue|
+			tr
+				td = venue.name
+				td = venue.owner
+				td = venue.address
 
+=link_to("New Venue", new_venue_path)

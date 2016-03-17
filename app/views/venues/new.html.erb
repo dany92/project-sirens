@@ -1,3 +1,4 @@
+<%= render 'common/errors', obj: @venue %>
 <div class="col-md-6 col-md-offset-4">
   <div id="floating-panel">
     <input id="address" type="textbox" value="Boston, MA, USA">
@@ -9,7 +10,6 @@
 <table class="col-md-12 col-md-offset-2 table table-hover" id="venueList">
   <thead>
     <tr>
-      <th> Select </th>
       <th> Venue Name </th>
       <th> Address </th>
     <tr>
@@ -18,17 +18,29 @@
   </tbody>
 </table>
 
-<form>
-  <fieldset class="form-group">
-    <input type="text" class="form-control" id="venueName" readonly="readonly" placeholder="Venue Name">
-  </fieldset>
-  <fieldset class="form-group">
-    <input type="text" class="form-control" id="venueOwner" placeholder="Owner">
-  </fieldset>
-    <fieldset class="form-group">
-    <input type="text" class="form-control" id="venueAddress" readonly="readonly" placeholder="Address">
-  </fieldset>
-</form>
+<%= form_for(@venue, :html => {class: "form-horizontal", role: "form"}) do |f| %>
+	<div class="form-group">
+		<div class="col-sm-8">
+			<%= f.text_field :name, class: "form-control", placeholder: "Venue Name", autofocus: true, readonly: true %>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-8">
+			<%= f.text_field :owner, class: "form-control", placeholder: "Owner", autofocus: true %>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-8">
+			<%= f.text_field :address, class: "form-control", placeholder: "Venue Address", autofocus: true, readonly: true %>
+		</div>
+	</div>
+	<div class= 'form-group'>
+		<div class="col-sm-offset-2 col-sm-10">
+			<%= f.submit class: 'btn btn-primary btn-lg'%>
+		</div>
+	</div>
+<% end %>
+
 
 <script>
   var map;
@@ -111,8 +123,8 @@ $("#venueList").on('click','tr',function(e){
         // all td value with comma seprated
     //alert(tdValue);
     //alert(trValue);
-    $('#venueName').val(tdValue[0]);
-    $('#venueAddress').val(tdValue[1]);
+    $('#venue_name').val(tdValue[0]);
+    $('#venue_address').val(tdValue[1]);
 }); 
 
 </script>

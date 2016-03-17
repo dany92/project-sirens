@@ -10,6 +10,7 @@ gem 'devise-bootstrap-views'
 gem 'pundit'
 gem 'geocoder'
 gem 'slim'
+gem 'will_paginate', '~> 3.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 # Use Uglifier as compressor for JavaScript assets
